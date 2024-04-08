@@ -1,4 +1,5 @@
 package model;
+
 import java.util.Objects;
 
 public class Task {
@@ -19,6 +20,8 @@ public class Task {
         setStatus(status);
         setDescription(description);
     }
+
+    public Epic getEpic() { return null; }
 
     public int getId() {
         return id;
@@ -74,4 +77,5 @@ public class Task {
                 ", description='" + description + '\'' +
                 '}';
     }
+
 }

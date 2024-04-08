@@ -24,5 +24,4 @@ public class Epic extends Task {
     public void updateStatus(){
         status = Status.NEW;
     }
-
 }
