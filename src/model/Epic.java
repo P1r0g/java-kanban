@@ -14,7 +14,7 @@ public class Epic extends Task {
     }
 
     public void addTask(SubTask subTask){
-
+        subTasks.add(subTask);
     }
 
     public void removeTask(SubTask subTask){
@@ -23,5 +23,12 @@ public class Epic extends Task {
 
     public void updateStatus(){
         status = Status.NEW;
+    }
+
+    @Override
+    public String toString() {
+        return "Epic{" +
+                "subTasks=" + subTasks +
+                '}';
     }
 }
