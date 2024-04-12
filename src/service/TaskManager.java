@@ -43,6 +43,10 @@ public class TaskManager {
     }
 
     public void delete(int id) {
+        if (!tasks.containsValue(get(id))){
+            throw new RuntimeException("Такой задачи нет(");
+        }
+
         tasks.remove(id);
     }
 
@@ -71,11 +75,16 @@ public class TaskManager {
         }
         saved.setName(epic.getName());
         saved.setDescription(epic.getDescription());
-
+        epic.updateStatus(saved);
     }
 
     public void deleteEpic(int id) {
-        epics.remove(id);
+        if (!epics.containsValue(getEpic(id))) throw new RuntimeException("Такого эпика не существует");
+        else {
+            Epic epic = epics.get(id);
+            epic.getSubTasks().clear();
+            epics.remove(id);
+        }
     }
 
     public void getSubTasksInEpic(Epic epic) {
@@ -111,16 +120,21 @@ public class TaskManager {
         Epic epicUpdates = epics.get(epic.getId());
 
         epicUpdates.getSubTasks().set(subTask.getId(), subTask);
-        epicUpdates.updateStatus();
+        epic.updateStatus(epicUpdates);
     }
 
     public void deleteSubTask(int id) {
-        SubTask removeSubTask = subTasks.remove(id);
+        if (!subTasks.containsValue(getSubTask(id))) throw new RuntimeException("Такой подзадачи нет");
+        else {
+            SubTask removeSubTask = subTasks.remove(id);
 
-        Epic epic = removeSubTask.getEpic();
-        Epic epicSaved = epics.get(epic.getId());
+            Epic epic = removeSubTask.getEpic();
+            Epic epicSaved = epics.get(epic.getId());
 
-        epicSaved.getSubTasks().remove(removeSubTask);
-        epicSaved.updateStatus();
+            epicSaved.getSubTasks().remove(removeSubTask);
+            epic.updateStatus(epicSaved);
+
+            subTasks.remove(id);
+        }
     }
 }

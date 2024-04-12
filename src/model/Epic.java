@@ -17,18 +17,32 @@ public class Epic extends Task {
         subTasks.add(subTask);
     }
 
-    public void removeTask(SubTask subTask){
 
-    }
+    public void updateStatus(Epic epic){
+        boolean isDone = true;
+        boolean isNew = true;
 
-    public void updateStatus(){
-        status = Status.NEW;
+        if (subTasks.isEmpty()) epic.setStatus(Status.NEW);
+        else {
+            for (SubTask subTask : subTasks){
+                if (subTask.getStatus() != Status.DONE) isDone = false;
+                else if (subTask.getStatus() != Status.NEW) isNew = false;
+            }
+
+            if (isDone) epic.setStatus(Status.DONE);
+            else if (isNew) epic.setStatus(Status.NEW);
+            else epic.setStatus(Status.IN_PROGRESS);
+
+        }
     }
 
     @Override
     public String toString() {
         return "Epic{" +
-                "subTasks=" + subTasks +
+                "id=" + getId() +
+                ", name='" + getName() + '\'' +
+                ", status='" + status + '\'' +
+                ", description='" + getDescription() + '\'' +
                 '}';
     }
 }
