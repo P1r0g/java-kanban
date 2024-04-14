@@ -2,13 +2,15 @@ package service;
 
 import model.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class TaskManager {
     private HashMap<Integer, Task> tasks;
     private HashMap<Integer, Epic> epics;
     private HashMap<Integer, SubTask> subTasks;
-    private int seq;
+    private int id;
 
     public TaskManager() {
         this.tasks = new HashMap<>();
@@ -17,45 +19,47 @@ public class TaskManager {
     }
 
     private int generateID() {
-        return ++seq;
+        return ++id;
     }
 
-    public void getAll() {
-        System.out.println(tasks);
+    public ArrayList<Task> getAllTasks() {
+        return new ArrayList<>(tasks.values());
     }
 
-    public void deleteAll() {
+    public void deleteAllTasks() {
         tasks.clear();
     }
 
-    public Task get(int id) {
+    public Task getTask(int id) {
         return tasks.get(id);
     }
 
-    public Task create(Task task) {
+    public Task createTask(Task task) {
         task.setId(generateID());
         tasks.put(task.getId(), task);
         return task;
     }
 
-    public void update(Task task) {
+    public void updateTask(Task task) {
+        if (!tasks.containsKey(task.getId())) throw new RuntimeException("Такой задачи нет");
         tasks.put(task.getId(), task);
     }
 
     public void delete(int id) {
-        if (!tasks.containsValue(get(id))){
+        if (!tasks.containsKey(id)){
             throw new RuntimeException("Такой задачи нет(");
         }
 
         tasks.remove(id);
     }
 
-    public void getAllEpic() {
-        System.out.println(epics);
+    public ArrayList<Epic> getAllEpic() {
+        return new ArrayList<>(epics.values());
     }
 
     public void deleteAllEpic() {
         epics.clear();
+        subTasks.clear();
     }
 
     public Epic getEpic(int id) {
@@ -79,7 +83,7 @@ public class TaskManager {
     }
 
     public void deleteEpic(int id) {
-        if (!epics.containsValue(getEpic(id))) throw new RuntimeException("Такого эпика не существует");
+        if (!epics.containsKey(id)) throw new RuntimeException("Такого эпика не существует");
         else {
             Epic epic = epics.get(id);
             epic.getSubTasks().clear();
@@ -87,16 +91,19 @@ public class TaskManager {
         }
     }
 
-    public void getSubTasksInEpic(Epic epic) {
-        System.out.println(epic.getSubTasks());
+    public List<SubTask> getSubTasksInEpic(Epic epic) {
+        return epic.getSubTasks();
     }
 
-    public void getAllSubTask() {
-        System.out.println(subTasks);
+    public ArrayList<SubTask> getAllSubTask() {
+        return new ArrayList<>(subTasks.values());
     }
 
     public void deleteAllSubTask() {
         subTasks.clear();
+        for (Epic epic : epics.values()){
+            epic.getSubTasks().clear();
+        }
     }
 
     public SubTask getSubTask(int id) {
@@ -109,6 +116,7 @@ public class TaskManager {
 
         Epic epic = epics.get(subTask.getEpic().getId());
         epic.addTask(subTask);
+        epic.updateStatus(epic);
 
         return subTask;
     }
@@ -124,7 +132,7 @@ public class TaskManager {
     }
 
     public void deleteSubTask(int id) {
-        if (!subTasks.containsValue(getSubTask(id))) throw new RuntimeException("Такой подзадачи нет");
+        if (!subTasks.containsKey(id)) throw new RuntimeException("Такой подзадачи нет");
         else {
             SubTask removeSubTask = subTasks.remove(id);
 
