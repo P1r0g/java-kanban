@@ -103,7 +103,9 @@ public class TaskManager {
         subTasks.clear();
         for (Epic epic : epics.values()) {
             epic.getSubTasks().clear();
+            epic.updateStatus(epic);
         }
+
     }
 
     public SubTask getSubTask(int id) {
