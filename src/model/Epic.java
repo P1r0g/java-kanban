@@ -25,14 +25,12 @@ public class Epic extends Task {
         if (subTasks.isEmpty()) epic.setStatus(Status.NEW);
         else {
             for (SubTask subTask : subTasks){
+                if (subTask.getStatus() != Status.NEW) isNew = false;
                 if (subTask.getStatus() != Status.DONE) isDone = false;
-                else if (subTask.getStatus() != Status.NEW) isNew = false;
             }
-
-            if (isDone) epic.setStatus(Status.DONE);
-            else if (isNew) epic.setStatus(Status.NEW);
+            if (isNew) epic.setStatus(Status.NEW);
+            else if (isDone) epic.setStatus(Status.DONE);
             else epic.setStatus(Status.IN_PROGRESS);
-
         }
     }
 
