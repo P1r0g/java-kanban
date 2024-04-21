@@ -1,9 +1,10 @@
 import model.*;
+import service.InMemoryTaskManager;
 import service.TaskManager;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = new InMemoryTaskManager();
         Task task = taskManager.createTask(new Task("Новая задача", Status.NEW, "описание"));
         Epic epic = taskManager.createEpic(new Epic("Новый эпик", Status.DONE, "Второе описание"));
         SubTask firstSubTask = taskManager.createSubTask(new SubTask("Описание",Status.NEW, "Описание", epic));
