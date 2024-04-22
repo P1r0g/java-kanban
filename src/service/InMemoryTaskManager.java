@@ -11,16 +11,33 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Epic> epics;
     private HashMap<Integer, SubTask> subTasks;
     private int id;
+    private final HistoryManager historyManager;
 
-    public InMemoryTaskManager() {
+    public InMemoryTaskManager(HistoryManager historyManager) {
         this.tasks = new HashMap<>();
         this.epics = new HashMap<>();
         this.subTasks = new HashMap<>();
+        this.historyManager = historyManager;
+    }
+    private int generateID() {
+        return ++id;
+    }
+
+    public List<Task> getTasks() {
+        return (List<Task>) tasks.values();
+    }
+
+    public HashMap<Integer, Epic> getEpics() {
+        return epics;
+    }
+
+    public HashMap<Integer, SubTask> getSubTasks() {
+        return subTasks;
     }
 
     @Override
-    public int generateID() {
-        return ++id;
+    public List<Task> getHistoryManager() {
+        return historyManager.getHistory();
     }
 
     @Override
@@ -35,6 +52,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(int id) {
+        historyManager.addInHistory(tasks.get(id));
         return tasks.get(id);
     }
 
@@ -73,6 +91,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getEpic(int id) {
+        historyManager.addInHistory(epics.get(id));
         return epics.get(id);
     }
 
@@ -127,6 +146,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask getSubTask(int id) {
+        historyManager.addInHistory(subTasks.get(id));
         return subTasks.get(id);
     }
 
@@ -138,7 +158,6 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epics.get(subTask.getEpic().getId());
         epic.addTask(subTask);
         epic.updateStatus(epic);
-
         return subTask;
     }
 
@@ -171,10 +190,5 @@ public class InMemoryTaskManager implements TaskManager {
 
             subTasks.remove(id);
         }
-    }
-
-    @Override
-    public List<Integer> getHistory(){
-        return null;
     }
 }

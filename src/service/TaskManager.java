@@ -3,12 +3,9 @@ package service;
 import model.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public interface TaskManager { ;
-
-    int generateID();
 
     ArrayList<Task> getAllTasks();
 
@@ -48,5 +45,6 @@ public interface TaskManager { ;
 
     void deleteSubTask(int id);
 
-        List<Integer> getHistory();
+    List<Task> getHistoryManager();
+
 }

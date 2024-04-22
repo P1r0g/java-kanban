@@ -1,10 +1,11 @@
 import model.*;
 import service.InMemoryTaskManager;
+import service.Managers;
 import service.TaskManager;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager taskManager = new InMemoryTaskManager();
+        TaskManager taskManager = Managers.getDefault();
         Task task = taskManager.createTask(new Task("Новая задача", Status.NEW, "описание"));
         Epic epic = taskManager.createEpic(new Epic("Новый эпик", Status.DONE, "Второе описание"));
         SubTask firstSubTask = taskManager.createSubTask(new SubTask("Описание",Status.NEW, "Описание", epic));
@@ -30,5 +31,6 @@ public class Main {
         System.out.println(taskManager.getAllTasks());
         System.out.println(taskManager.getAllEpic());
         System.out.println(taskManager.getAllSubTask());
+        System.out.println(taskManager.getHistoryManager());
     }
 }
