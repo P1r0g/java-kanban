@@ -19,6 +19,7 @@ public class InMemoryTaskManager implements TaskManager {
         this.subTasks = new HashMap<>();
         this.historyManager = historyManager;
     }
+
     private int generateID() {
         return ++id;
     }
