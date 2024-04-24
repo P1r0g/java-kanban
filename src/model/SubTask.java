@@ -12,7 +12,6 @@ public class SubTask extends Task {
         super(id, name, status, description);
     }
 
-    @Override
     public Epic getEpic(){
         return epic;
     }
