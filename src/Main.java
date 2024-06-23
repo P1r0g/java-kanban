@@ -22,12 +22,23 @@ public class Main {
         Task taskFromManager = taskManager.getTask(task.getId());
         taskFromManager.setStatus(Status.DONE);
         taskManager.updateTask(taskFromManager);
+        Task taskFromManager1 = taskManager.getTask(task1.getId());
+        taskFromManager1.setStatus(Status.DONE);
+        taskManager.updateTask(taskFromManager1);
         SubTask subTaskToUpdate = taskManager.getSubTask(firstSubTask.getId());
         subTaskToUpdate.setStatus(Status.DONE);
         taskManager.updateSubTask(subTaskToUpdate);
         SubTask subTaskToUpdate1 = taskManager.getSubTask(secondSubTask.getId());
         subTaskToUpdate1.setStatus(Status.DONE);
         taskManager.updateSubTask(subTaskToUpdate1);
+        SubTask subTaskToUpdate2 = taskManager.getSubTask(thirdSubTask.getId());
+        subTaskToUpdate2.setStatus(Status.DONE);
+        taskManager.updateSubTask(subTaskToUpdate2);
+        Epic epicToUpdate = taskManager.getEpic(epic1.getId());
+        epicToUpdate.setStatus(Status.DONE);
+        taskManager.updateEpic(epicToUpdate);
+
+
 
         System.out.println("-----");
 
