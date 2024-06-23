@@ -6,8 +6,13 @@ import java.util.List;
 public class Epic extends Task {
     private List<SubTask> subTasks = new ArrayList<>();
 
+
     public Epic(String name, Status status, String description) {
         super(name, status, description);
+    }
+
+    public Epic(int id, String name, Status status, String description) {
+        super(id, name, status, description);
     }
 
     public List<SubTask> getSubTasks() {
@@ -15,7 +20,8 @@ public class Epic extends Task {
     }
 
     public void addTask(SubTask subTask) {
-        subTasks.add(subTask);
+        if (this.getId() == subTask.getId()) System.out.println("Нельзя добавить epic в subTaskList");
+        else subTasks.add(subTask);
     }
 
 
