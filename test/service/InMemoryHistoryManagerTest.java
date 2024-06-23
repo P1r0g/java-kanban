@@ -16,8 +16,8 @@ class InMemoryHistoryManagerTest {
     final Task task = new Task(1,"Новая задача", Status.NEW, "описание");
     final Task task1 = new Task(2,"Новая задача", Status.NEW, "000писание");
     final Epic epic = new Epic(3, "НОвый эпик", Status.NEW, "ООписание0");
-    final SubTask subTask = new SubTask(4, "Новая подзадача", Status.NEW, "Описание");
-    final SubTask subTask1 = new SubTask(5, "New подзадача", Status.NEW, "О00писание");
+    final SubTask subTask = new SubTask(4, "Новая подзадача", Status.NEW, "Описание", epic);
+    final SubTask subTask1 = new SubTask(5, "New подзадача", Status.NEW, "О00писание", epic);
 
     @Test
     void addInHistory() {
