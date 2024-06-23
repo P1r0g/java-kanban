@@ -20,7 +20,7 @@ public class Epic extends Task {
     }
 
     public void addTask(SubTask subTask) {
-        subTasks.add(subTask);
+        if (subTask.getId() != this.getId()) subTasks.add(subTask);
     }
 
 
