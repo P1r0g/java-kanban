@@ -1,6 +1,8 @@
 package service;
 
-import model.*;
+import model.Epic;
+import model.SubTask;
+import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +25,8 @@ public class InMemoryTaskManager implements TaskManager {
     private int generateID() {
         return ++id;
     }
-        @Override
+
+    @Override
     public List<Task> getHistoryManager() {
         return historyManager.getAll();
     }
@@ -62,7 +65,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (!tasks.containsKey(id)) {
             throw new RuntimeException("Такой задачи нет(");
         }
-
+        historyManager.remove(id);
         tasks.remove(id);
     }
 
@@ -73,13 +76,22 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllEpic() {
-        epics.clear();
-        subTasks.clear();
+        for (Epic epic : epics.values()) {
+            for (SubTask subTask : epic.getSubTasks()) {
+                historyManager.remove(subTask.getId());
+                subTasks.remove(subTask.getId());
+            }
+            historyManager.remove(epic.getId());
+            epics.remove(epic.getId());
+        }
     }
 
     @Override
     public Epic getEpic(int id) {
         historyManager.add(epics.get(id));
+        for (SubTask subTask : epics.get(id).getSubTasks()) {
+            historyManager.add(subTask);
+        }
         return epics.get(id);
     }
 
@@ -107,8 +119,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (!epics.containsKey(id)) throw new RuntimeException("Такого эпика не существует");
         Epic epic = epics.get(id);
         for (SubTask subTask : epic.getSubTasks()) {
+            historyManager.remove(subTask.getId());
             subTasks.remove(subTask.getId());
         }
+        historyManager.remove(id);
         epics.remove(id);
     }
 
@@ -124,7 +138,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllSubTask() {
-        subTasks.clear();
+        for (SubTask subTask : subTasks.values()) {
+            historyManager.remove(subTask.getId());
+            subTasks.remove(subTask.getId());
+        }
         for (Epic epic : epics.values()) {
             epic.getSubTasks().clear();
             epic.updateStatus(epic);
@@ -176,6 +193,7 @@ public class InMemoryTaskManager implements TaskManager {
             epicSaved.getSubTasks().remove(removeSubTask);
             epic.updateStatus(epicSaved);
 
+            historyManager.remove(id);
             subTasks.remove(id);
         }
     }

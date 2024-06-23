@@ -17,6 +17,7 @@ public class Main {
         System.out.println(taskManager.getAllTasks());
         System.out.println(taskManager.getAllEpic());
         System.out.println(taskManager.getAllSubTask());
+        System.out.println(taskManager.getHistoryManager());
 
         Task taskFromManager = taskManager.getTask(task.getId());
         taskFromManager.setStatus(Status.DONE);
@@ -33,7 +34,8 @@ public class Main {
         System.out.println(taskManager.getAllTasks());
         System.out.println(taskManager.getAllEpic());
         System.out.println(taskManager.getAllSubTask());
-        taskManager.deleteAllSubTask();
+        System.out.println(taskManager.getHistoryManager());
+        taskManager.deleteSubTask(firstSubTask.getId());
 
         System.out.println("-----");
 
