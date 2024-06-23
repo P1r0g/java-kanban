@@ -12,7 +12,7 @@ public class SubTask extends Task {
         super(id, name, status, description);
     }
 
-    public Epic getEpic(){
+    public Epic getEpic() {
         return epic;
     }
 
