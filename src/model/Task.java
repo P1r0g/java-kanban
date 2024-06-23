@@ -21,7 +21,9 @@ public class Task {
         setDescription(description);
     }
 
-    public Epic getEpic() { return null; }
+    public Epic getEpic() {
+        return null;
+    }
 
     public int getId() {
         return id;
