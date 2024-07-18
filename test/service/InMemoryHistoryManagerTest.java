@@ -21,19 +21,19 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void addInHistory() {
-        historyManager.add(task);
-        historyManager.add(task1);
+        historyManager.addInHistory(task);
+        historyManager.addInHistory(task1);
         List<Task> history = historyManager.getAll();
         assertEquals(history, List.of(task, task1), "Ошибка");
     }
 
     @Test
     void removeInHistory() {
-        historyManager.add(task);
-        historyManager.add(task1);
-        historyManager.add(epic);
-        historyManager.add(subTask);
-        historyManager.add(subTask1);
+        historyManager.addInHistory(task);
+        historyManager.addInHistory(task1);
+        historyManager.addInHistory(epic);
+        historyManager.addInHistory(subTask);
+        historyManager.addInHistory(subTask1);
         historyManager.remove(task.getId());
         historyManager.remove(subTask.getId());
         List<Task> tasks = historyManager.getAll();

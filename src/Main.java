@@ -45,7 +45,9 @@ public class Main {
         System.out.println(taskManager.getAllEpic());
         System.out.println(taskManager.getAllSubTask());
         System.out.println(taskManager.getHistoryManager());
-        taskManager.deleteSubTask(firstSubTask.getId());
+        taskManager.deleteAllSubTask();
+        taskManager.deleteAllTasks();
+        taskManager.deleteAllEpic();
 
         System.out.println("-----");
 
