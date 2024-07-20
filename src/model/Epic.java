@@ -19,8 +19,8 @@ public class Epic extends Task {
         return subTasks;
     }
 
-    public void addTask(SubTask subTask) {
-        if (subTask instanceof SubTask) subTasks.add(subTask);
+    public void addTask(Task subTask) {
+        if (subTask instanceof SubTask) subTasks.add((SubTask) subTask);
         else System.out.println("Нельзя");
     }
 
