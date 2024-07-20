@@ -20,8 +20,8 @@ public class Epic extends Task {
     }
 
     public void addTask(Task subTask) {
-        if (subTask instanceof SubTask) subTasks.add((SubTask) subTask);
-        else System.out.println("Нельзя");
+        if (subTask instanceof Epic) System.out.println("Ошибка");
+        else subTasks.add((SubTask) subTask);
     }
 
 
