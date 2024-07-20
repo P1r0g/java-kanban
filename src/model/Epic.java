@@ -4,24 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private List<SubTask> subTasks = new ArrayList<>();
+    private List<SubTask> subTasks;
 
 
     public Epic(String name, Status status, String description) {
         super(name, status, description);
+        subTasks = new ArrayList<>();
     }
 
     public Epic(int id, String name, Status status, String description) {
         super(id, name, status, description);
+        subTasks = new ArrayList<>();
     }
 
     public List<SubTask> getSubTasks() {
         return subTasks;
     }
 
-    public void addTask(Task subTask) {
-        if (subTask instanceof Epic) System.out.println("Ошибка");
-        else subTasks.add((SubTask) subTask);
+    public void addTask(SubTask subTask) {
+        subTasks.add(subTask);
     }
 
 

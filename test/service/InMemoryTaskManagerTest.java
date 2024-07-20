@@ -51,7 +51,7 @@ class InMemoryTaskManagerTest {
     void shouldAddEpicInSubTaskList() {
         Epic epic = new Epic("Эпик", NEW, "Описание");
 
-        assertNotEquals(0, epic.getSubTasks().size(), "Epic добавляется");
+        assertEquals(0, epic.getSubTasks().size(), "Epic добавляется");
     }
 
     @Test
