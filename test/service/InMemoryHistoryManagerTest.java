@@ -1,25 +1,42 @@
 package service;
 
+import model.Epic;
+import model.Status;
+import model.SubTask;
+import model.Task;
 import org.junit.jupiter.api.Test;
-import model.*;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InMemoryHistoryManagerTest {
 
     final HistoryManager historyManager = new InMemoryHistoryManager();
-    final Task task = new Task("Новая задача", Status.NEW, "описание");
-    @Test
-    void getHistory() {
-    }
+    final Task task = new Task(1,"Новая задача", Status.NEW, "описание");
+    final Task task1 = new Task(2,"Новая задача", Status.NEW, "000писание");
+    final Epic epic = new Epic(3, "НОвый эпик", Status.NEW, "ООписание0");
+    final SubTask subTask = new SubTask(4, "Новая подзадача", Status.NEW, "Описание", epic);
+    final SubTask subTask1 = new SubTask(5, "New подзадача", Status.NEW, "О00писание", epic);
 
     @Test
     void addInHistory() {
         historyManager.addInHistory(task);
-        final List<Task> history = historyManager.getHistory();
-        assertNotNull(history, "История не пустая.");
-        assertEquals(1, history.size(), "История не пустая.");
+        historyManager.addInHistory(task1);
+        List<Task> history = historyManager.getAll();
+        assertEquals(history, List.of(task, task1), "Ошибка");
+    }
+
+    @Test
+    void removeInHistory() {
+        historyManager.addInHistory(task);
+        historyManager.addInHistory(task1);
+        historyManager.addInHistory(epic);
+        historyManager.addInHistory(subTask);
+        historyManager.addInHistory(subTask1);
+        historyManager.remove(task.getId());
+        historyManager.remove(subTask.getId());
+        List<Task> tasks = historyManager.getAll();
+        assertEquals(tasks, List.of(task1, epic, subTask1), "Ошибка");
     }
 }
