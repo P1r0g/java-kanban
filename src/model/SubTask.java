@@ -30,4 +30,8 @@ public class SubTask extends Task {
                 ", description='" + getDescription() + '\'' +
                 '}';
     }
+
+    public TaskType getType() {
+        return TaskType.SUBTASK;
+    }
 }

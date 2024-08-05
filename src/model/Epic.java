@@ -4,17 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private List<SubTask> subTasks;
+    private List<SubTask> subTasks = new ArrayList<>();
 
 
     public Epic(String name, Status status, String description) {
         super(name, status, description);
-        subTasks = new ArrayList<>();
     }
 
     public Epic(int id, String name, Status status, String description) {
         super(id, name, status, description);
-        subTasks = new ArrayList<>();
     }
 
     public List<SubTask> getSubTasks() {
@@ -22,7 +20,8 @@ public class Epic extends Task {
     }
 
     public void addTask(SubTask subTask) {
-        subTasks.add(subTask);
+        if (this.getId() == subTask.getId()) System.out.println("Нельзя добавить epic в subTaskList");
+        else subTasks.add(subTask);
     }
 
 
@@ -50,5 +49,9 @@ public class Epic extends Task {
                 ", status='" + status + '\'' +
                 ", description='" + getDescription() + '\'' +
                 '}';
+    }
+
+    public TaskType getType() {
+        return TaskType.EPIC;
     }
 }
