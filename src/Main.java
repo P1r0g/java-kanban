@@ -55,5 +55,9 @@ public class Main {
         System.out.println(taskManager.getAllEpic());
         System.out.println(taskManager.getAllSubTask());
         System.out.println(taskManager.getHistoryManager());
+
+        System.out.println("-------");
+
+        Task task2 = taskManager.createTask(new Task("name", Status.NEW, "fnsdjifs"));
     }
 }
