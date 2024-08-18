@@ -8,9 +8,9 @@ public class Main {
         Task task = taskManager.createTask(new Task("Первая задача", Status.NEW, "описание"));
         Task task1 = taskManager.createTask(new Task("Вторая задача", Status.NEW, "описание"));
         Epic epic = taskManager.createEpic(new Epic("Первый эпик", Status.DONE, "Второе описание"));
-        SubTask firstSubTask = taskManager.createSubTask(new SubTask("Описание",Status.NEW, "Описание", epic));
-        SubTask secondSubTask = taskManager.createSubTask(new SubTask("Название", Status.NEW, "Описание", epic));
-        SubTask thirdSubTask = taskManager.createSubTask(new SubTask("Слово",Status.NEW, "Описание", epic));
+        SubTask firstSubTask = taskManager.createSubTask(new SubTask("Описание",Status.NEW, "Описание", epic,TaskType.SUBTASK));
+        SubTask secondSubTask = taskManager.createSubTask(new SubTask("Название", Status.NEW, "Описание", epic, TaskType.SUBTASK));
+        SubTask thirdSubTask = taskManager.createSubTask(new SubTask("Слово",Status.NEW, "Описание", epic, TaskType.SUBTASK));
         Epic epic1 = taskManager.createEpic(new Epic("Второй эпик", Status.DONE, "Второе описание"));
 
         System.out.println(taskManager.getAllTasks());
@@ -59,5 +59,7 @@ public class Main {
         System.out.println("-------");
 
         Task task2 = taskManager.createTask(new Task("name", Status.NEW, "fnsdjifs"));
+        Task tasks = taskManager.createTask(new Task("sdf", Status.NEW, "afsaf", TaskType.TASK));
+        Epic epicc = taskManager.createEpic(new Epic("dfdf", Status.NEW, "adsfsdf", TaskType.EPIC));
     }
 }

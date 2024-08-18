@@ -1,8 +1,11 @@
 package model;
 
+import service.FileBackedTaskManager;
+
 import java.util.Objects;
 
 public class Task {
+    private final TaskType type;
     private int id;
     private String name;
     protected Status status;
@@ -13,12 +16,46 @@ public class Task {
         setName(name);
         setStatus(status);
         setDescription(description);
+        this.type = TaskType.TASK;
     }
 
     public Task(String name, Status status, String description) {
         setName(name);
         setStatus(status);
         setDescription(description);
+        this.type = TaskType.TASK;
+    }
+
+    public Task(String name, Status status, String description, TaskType type) {
+        this.type = type;
+        setName(name);
+        setStatus(status);
+        setDescription(description);
+    }
+
+    public static void fromString(String str, FileBackedTaskManager manager) {
+        String[] line = str.split(", ");
+        if (line.length < 5) {
+            throw new IllegalArgumentException("Недостаточно параметров для создания задачи");
+        }
+        Status status = Status.valueOf(line[3]);
+        String name = line[2];
+        String description = line[4];
+        int id = Integer.parseInt(line[0]);
+        switch (line[1]) {
+            case "TASK":
+                manager.createTask(new Task(id, name, status, description));
+                break;
+            default:
+                break;
+            case "EPIC":
+                manager.createEpicForSaved(new Epic(id, name, status, description));
+                break;
+            case "SUBTASK":
+                int epicId = Integer.parseInt(line[5]);
+                manager.createSubtaskForSaved(new SubTask(id, name, status, description, manager.getEpic(epicId)));
+                break;
+        }
     }
 
     public Epic getEpic() {
@@ -81,7 +118,7 @@ public class Task {
     }
 
     public TaskType getType() {
-        return TaskType.TASK;
+        return this.type;
     }
 
 }

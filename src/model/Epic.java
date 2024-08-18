@@ -5,14 +5,22 @@ import java.util.List;
 
 public class Epic extends Task {
     private List<SubTask> subTasks = new ArrayList<>();
+    private final TaskType type;
 
 
     public Epic(String name, Status status, String description) {
         super(name, status, description);
+        this.type = TaskType.EPIC;
     }
 
     public Epic(int id, String name, Status status, String description) {
         super(id, name, status, description);
+        this.type = TaskType.EPIC;
+    }
+
+    public Epic(String name, Status status, String description, TaskType type) {
+        super(name, status, description);
+        this.type = TaskType.EPIC;
     }
 
     public List<SubTask> getSubTasks() {
@@ -52,6 +60,6 @@ public class Epic extends Task {
     }
 
     public TaskType getType() {
-        return TaskType.EPIC;
+        return this.type;
     }
 }
