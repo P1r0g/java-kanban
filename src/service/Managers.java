@@ -1,8 +1,11 @@
 package service;
 
+import java.io.File;
+
 public class Managers {
+    static String path = "C:\\Users\\pirog\\java-kanban\\resources.txt";
     public static TaskManager getDefault() {
-        return new FileBackedTaskManager();
+        return FileBackedTaskManager.loadFromFile(new File(path));
     }
 
     public static HistoryManager getDefaultHistory() {

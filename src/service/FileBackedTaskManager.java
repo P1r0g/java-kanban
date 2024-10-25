@@ -9,12 +9,24 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private File file;
+    private Path path;
 
     public FileBackedTaskManager() {
         super();
+        createResourcesTxt();
+    }
+
+    public FileBackedTaskManager(File file) {
+        this.file = file;
+        createResourcesTxt();
+    }
+
+    public FileBackedTaskManager(Path path) {
+        this.path = path;
         createResourcesTxt();
     }
 
@@ -40,7 +52,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    public void createResourcesTxt() {
+    private void createResourcesTxt() {
         try {
             Path currentPath = Paths.get("").toAbsolutePath();
             Path filePath = currentPath.resolve("resources.txt");
@@ -52,14 +64,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 this.file = filePath.toFile();
             } else {
                 this.file = filePath.toFile();
-                unpackFile();
+                readFile();
             }
         } catch (IOException e) {
             throw new RuntimeException("Ошибка при создании файла: " + e.getMessage());
         }
     }
 
-    public void unpackFile() {
+    private void readFile() {
         if (file == null) return;
         try (BufferedReader reader = new BufferedReader(new FileReader(this.file, StandardCharsets.UTF_8))) {
             String line;
@@ -77,6 +89,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
+    static FileBackedTaskManager loadFromFile(File file) {
+        FileBackedTaskManager manager = new FileBackedTaskManager(file);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Task.fromString(line, manager);
+
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return manager;
+    }
+
     @Override
     public Task createTask(Task task) {
         super.createTask(task);
@@ -84,9 +112,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return task;
     }
 
-    public void createTaskForSaved(Task task) {
-        super.createTask(task);
-    }
 
     @Override
     public Epic createEpic(Epic epic) {
@@ -95,19 +120,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return epic;
     }
 
-    public void createEpicForSaved(Epic epic) {
-        super.createEpic(epic);
-    }
-
     @Override
     public SubTask createSubTask(SubTask subtask) {
         super.createSubTask(subtask);
         save();
         return subtask;
-    }
-
-    public void createSubtaskForSaved(SubTask subtask) {
-        super.createSubTask(subtask);
     }
 
     @Override

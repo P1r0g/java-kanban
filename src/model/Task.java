@@ -5,7 +5,7 @@ import service.FileBackedTaskManager;
 import java.util.Objects;
 
 public class Task {
-    private final TaskType type;
+    protected TaskType type;
     private int id;
     private String name;
     protected Status status;
@@ -49,11 +49,11 @@ public class Task {
             default:
                 break;
             case "EPIC":
-                manager.createEpicForSaved(new Epic(id, name, status, description));
+                manager.createEpic(new Epic(id, name, status, description));
                 break;
             case "SUBTASK":
                 int epicId = Integer.parseInt(line[5]);
-                manager.createSubtaskForSaved(new SubTask(id, name, status, description, manager.getEpic(epicId)));
+                manager.createSubTask(new SubTask(id, name, status, description, manager.getEpic(epicId)));
                 break;
         }
     }
@@ -109,16 +109,10 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+        return id + "," + type + "," + name + "," + status + "," + description;
     }
 
     public TaskType getType() {
         return this.type;
     }
-
 }

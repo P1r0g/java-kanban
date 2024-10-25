@@ -8,9 +8,9 @@ public class Main {
         Task task = taskManager.createTask(new Task("Первая задача", Status.NEW, "описание"));
         Task task1 = taskManager.createTask(new Task("Вторая задача", Status.NEW, "описание"));
         Epic epic = taskManager.createEpic(new Epic("Первый эпик", Status.DONE, "Второе описание"));
-        SubTask firstSubTask = taskManager.createSubTask(new SubTask("Описание",Status.NEW, "Описание", epic,TaskType.SUBTASK));
+        SubTask firstSubTask = taskManager.createSubTask(new SubTask("Описание", Status.NEW, "Описание", epic, TaskType.SUBTASK));
         SubTask secondSubTask = taskManager.createSubTask(new SubTask("Название", Status.NEW, "Описание", epic, TaskType.SUBTASK));
-        SubTask thirdSubTask = taskManager.createSubTask(new SubTask("Слово",Status.NEW, "Описание", epic, TaskType.SUBTASK));
+        SubTask thirdSubTask = taskManager.createSubTask(new SubTask("Слово", Status.NEW, "Описание", epic, TaskType.SUBTASK));
         Epic epic1 = taskManager.createEpic(new Epic("Второй эпик", Status.DONE, "Второе описание"));
 
         System.out.println(taskManager.getAllTasks());
@@ -36,7 +36,6 @@ public class Main {
         Epic epicToUpdate = taskManager.getEpic(epic1.getId());
         epicToUpdate.setStatus(Status.DONE);
         taskManager.updateEpic(epicToUpdate);
-
 
 
         System.out.println("-----");
