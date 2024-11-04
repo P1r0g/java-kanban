@@ -4,17 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private List<SubTask> subTasks;
+    private List<SubTask> subTasks = new ArrayList<>();
 
 
     public Epic(String name, Status status, String description) {
         super(name, status, description);
-        subTasks = new ArrayList<>();
+        this.type = TaskType.EPIC;
     }
 
     public Epic(int id, String name, Status status, String description) {
         super(id, name, status, description);
-        subTasks = new ArrayList<>();
+        this.type = TaskType.EPIC;
+    }
+
+    public Epic(String name, Status status, String description, TaskType type) {
+        super(name, status, description);
+        this.type = TaskType.EPIC;
     }
 
     public List<SubTask> getSubTasks() {
@@ -22,7 +27,8 @@ public class Epic extends Task {
     }
 
     public void addTask(SubTask subTask) {
-        subTasks.add(subTask);
+        if (this.getId() == subTask.getId()) System.out.println("Нельзя добавить epic в subTaskList");
+        else subTasks.add(subTask);
     }
 
 
@@ -44,11 +50,10 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
-                "id=" + getId() +
-                ", name='" + getName() + '\'' +
-                ", status='" + status + '\'' +
-                ", description='" + getDescription() + '\'' +
-                '}';
+        return super.toString();
+    }
+
+    public TaskType getType() {
+        return this.type;
     }
 }

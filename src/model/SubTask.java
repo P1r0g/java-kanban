@@ -3,14 +3,28 @@ package model;
 public class SubTask extends Task {
     private Epic epic;
 
+    public SubTask(String name, Status status, String description, Epic epic, TaskType type) {
+        super(name, status, description);
+        setEpic(epic);
+        this.type = type;
+    }
+
     public SubTask(String name, Status status, String description, Epic epic) {
         super(name, status, description);
         setEpic(epic);
+        this.type = TaskType.SUBTASK;
+    }
+
+    public SubTask(int id, String name, Status status, String description, Epic epic, TaskType type) {
+        super(id, name, status, description);
+        setEpic(epic);
+        this.type = type;
     }
 
     public SubTask(int id, String name, Status status, String description, Epic epic) {
         super(id, name, status, description);
-        setEpic(epic);
+        this.epic = epic;
+        this.type = TaskType.SUBTASK;
     }
 
     public Epic getEpic() {
@@ -23,11 +37,10 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return "SubTask{" +
-                "id=" + getId() +
-                ", name='" + getName() + '\'' +
-                ", status='" + status + '\'' +
-                ", description='" + getDescription() + '\'' +
-                '}';
+        return super.toString() + "," + epic;
+    }
+
+    public TaskType getType() {
+        return this.type;
     }
 }

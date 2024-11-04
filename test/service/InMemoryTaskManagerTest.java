@@ -40,7 +40,7 @@ class InMemoryTaskManagerTest {
     @Test
     void shouldGetEpicAndSubTask() {
         Epic epic = taskManager.createEpic(new Epic("задача", NEW, "Описание 1"));
-        SubTask subtask = taskManager.createSubTask(new SubTask("подзадача", NEW, "Описание", epic));
+        SubTask subtask = taskManager.createSubTask(new SubTask("подзадача", NEW, "Описание", epic, TaskType.SUBTASK));
         assertNotNull(taskManager.getAllEpic(), "Эпики пусты");
         assertNotNull(taskManager.getAllSubTask(), "подзадачи пусты");
         assertEquals(epic, taskManager.getEpic(epic.getId()), "Они не равны");
@@ -70,7 +70,7 @@ class InMemoryTaskManagerTest {
     void shouldCreateAnyTasks() {
         Task task = taskManager.createTask(new Task("Task1", NEW, "Описание 1"));
         Epic epic = taskManager.createEpic(new Epic("Task1", NEW, "Описание 1"));
-        SubTask subTask = taskManager.createSubTask(new SubTask("Task1", NEW, "Описание 1", epic));
+        SubTask subTask = taskManager.createSubTask(new SubTask("Task1", NEW, "Описание 1", epic, TaskType.SUBTASK));
 
         Task task2 = taskManager.getTask(task.getId());
         Epic epic2 = taskManager.getEpic(epic.getId());

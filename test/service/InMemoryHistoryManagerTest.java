@@ -1,9 +1,6 @@
 package service;
 
-import model.Epic;
-import model.Status;
-import model.SubTask;
-import model.Task;
+import model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,8 +13,8 @@ class InMemoryHistoryManagerTest {
     final Task task = new Task(1,"Новая задача", Status.NEW, "описание");
     final Task task1 = new Task(2,"Новая задача", Status.NEW, "000писание");
     final Epic epic = new Epic(3, "НОвый эпик", Status.NEW, "ООписание0");
-    final SubTask subTask = new SubTask(4, "Новая подзадача", Status.NEW, "Описание", epic);
-    final SubTask subTask1 = new SubTask(5, "New подзадача", Status.NEW, "О00писание", epic);
+    final SubTask subTask = new SubTask(4, "Новая подзадача", Status.NEW, "Описание", epic, TaskType.SUBTASK);
+    final SubTask subTask1 = new SubTask(5, "New подзадача", Status.NEW, "О00писание", epic, TaskType.SUBTASK);
 
     @Test
     void addInHistory() {
