@@ -22,14 +22,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         super();
         createResourcesTxt();
     }
+
     public FileBackedTaskManager(File file) {
         this.file = file;
         createResourcesTxt();
     }
+
     public FileBackedTaskManager(Path path) {
         this.path = path;
         createResourcesTxt();
     }
+
     public void save() {
         if (file == null) createResourcesTxt();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
@@ -51,6 +54,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             System.out.println("Ошибка при сохранении");
         }
     }
+
     private void createResourcesTxt() {
         try {
             Path currentPath = Paths.get("").toAbsolutePath();
@@ -69,6 +73,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new RuntimeException("Ошибка при создании файла: " + e.getMessage());
         }
     }
+
     private void readFile() {
         if (file == null) return;
         try (BufferedReader reader = new BufferedReader(new FileReader(this.file, StandardCharsets.UTF_8))) {
@@ -86,6 +91,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new RuntimeException(e);
         }
     }
+
     static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
 
@@ -101,6 +107,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         return manager;
     }
+
     private boolean isOverlapping(Task newTask) {
         return prioritizedTasks.stream().anyMatch(existingTask -> doTasksOverlap(existingTask, newTask));
     }
@@ -115,67 +122,80 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
         return start1.isBefore(end2) && start2.isBefore(end1);
     }
+
     @Override
     public Task createTask(Task task) {
         super.createTask(task);
         save();
         return task;
     }
+
     @Override
     public Epic createEpic(Epic epic) {
         super.createEpic(epic);
         save();
         return epic;
     }
+
     @Override
     public SubTask createSubTask(SubTask subtask) {
         super.createSubTask(subtask);
         save();
         return subtask;
     }
+
     @Override
     public void deleteAllTasks() {
         super.deleteAllTasks();
         save();
     }
+
     @Override
     public void deleteAllEpic() {
         super.deleteAllEpic();
         save();
     }
+
     @Override
     public void deleteAllSubTask() {
         super.deleteAllSubTask();
         save();
     }
+
     @Override
     public void delete(int id) {
         super.delete(id);
         save();
     }
+
     @Override
     public void deleteEpic(int id) {
         super.deleteEpic(id);
         save();
     }
+
     @Override
     public void deleteSubTask(int id) {
         super.deleteSubTask(id);
         save();
     }
+
     @Override
     public void updateTask(Task updatedTask) {
         super.updateTask(updatedTask);
         save();
     }
+
     @Override
     public void updateSubTask(SubTask updatedSubtask) {
         super.updateSubTask(updatedSubtask);
         save();
     }
+
     @Override
     public void updateEpic(Epic epic) {
         super.updateEpic(epic);
         save();
     }
+
 }
