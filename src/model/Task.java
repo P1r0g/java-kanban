@@ -80,9 +80,11 @@ public class Task {
                 break;
         }
     }
+
     public LocalDateTime getEndTime() {
         return startTime.plusMinutes(duration.toMinutes());
     }
+
     public Duration getDuration() {
         return duration;
     }
