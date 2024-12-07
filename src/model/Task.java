@@ -2,20 +2,43 @@ package model;
 
 import service.FileBackedTaskManager;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
-    protected TaskType type;
+    private final TaskType type;
     private int id;
     private String name;
     protected Status status;
     private String description;
+    private Duration duration;
+    private LocalDateTime startTime;
 
     public Task(int id, String name, Status status, String description) {
         setId(id);
         setName(name);
         setStatus(status);
         setDescription(description);
+        this.type = TaskType.TASK;
+    }
+
+    public Task(int id, String name, Status status, String description, Duration duration, LocalDateTime startTime) {
+        setId(id);
+        setName(name);
+        setStatus(status);
+        setDescription(description);
+        setDuration(duration);
+        setStartTime(startTime);
+        this.type = TaskType.TASK;
+    }
+
+    public Task(String name, Status status, String description, Duration duration, LocalDateTime startTime) {
+        setName(name);
+        setStatus(status);
+        setDescription(description);
+        setDuration(duration);
+        setStartTime(startTime);
         this.type = TaskType.TASK;
     }
 
@@ -57,6 +80,24 @@ public class Task {
                 break;
         }
     }
+    public LocalDateTime getEndTime() {
+        return startTime.plusMinutes(duration.toMinutes());
+    }
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
 
     public Epic getEpic() {
         return null;
@@ -94,25 +135,33 @@ public class Task {
         this.description = description;
     }
 
+    public TaskType getType() {
+        return this.type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id && Objects.equals(name, task.name) && Objects.equals(status, task.status) && Objects.equals(description, task.description);
+        return id == task.id && type == task.type && Objects.equals(name, task.name) && status == task.status && Objects.equals(description, task.description) && Objects.equals(duration, task.duration) && Objects.equals(startTime, task.startTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(type, id, name, status, description, duration, startTime);
     }
 
     @Override
     public String toString() {
-        return id + "," + type + "," + name + "," + status + "," + description;
-    }
-
-    public TaskType getType() {
-        return this.type;
+        return "Task{" +
+                "type=" + type +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                ", description='" + description + '\'' +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
+                '}';
     }
 }

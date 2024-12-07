@@ -58,7 +58,10 @@ public class Main {
         System.out.println("-------");
 
         Task task2 = taskManager.createTask(new Task("name", Status.NEW, "fnsdjifs"));
-        Task tasks = taskManager.createTask(new Task("sdf", Status.NEW, "afsaf", TaskType.TASK));
         Epic epicc = taskManager.createEpic(new Epic("dfdf", Status.NEW, "adsfsdf", TaskType.EPIC));
+        SubTask subTask = taskManager.createSubTask(new SubTask("sfgsdf", Status.IN_PROGRESS, "fgdfgdf", epicc, TaskType.SUBTASK));
+        Task tasks = taskManager.createTask(new Task("sdf", Status.NEW, "afsaf", TaskType.TASK));
+        Task taskss = taskManager.createTask(new Task("sdf", Status.NEW, "afsaf", TaskType.TASK));
+        taskManager.updateTask(taskss);
     }
 }
