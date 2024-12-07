@@ -12,7 +12,7 @@ class EpicTest {
 
     @BeforeEach
     void setup() {
-        epic = new Epic("Test Epic", "Test description");
+        epic = new Epic("Test Epic",Status.DONE, "Test description");
     }
 
     @Test
