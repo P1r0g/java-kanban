@@ -14,10 +14,12 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
+
     private File file;
     private Path path;
-    private final TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator.
-            nullsLast(Comparator.naturalOrder())));
+
+    private final TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator
+            .nullsLast(Comparator.naturalOrder())));
     public FileBackedTaskManager() {
         super();
         createResourcesTxt();
