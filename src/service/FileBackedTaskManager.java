@@ -20,6 +20,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator
             .nullsLast(Comparator.naturalOrder())));
+
     public FileBackedTaskManager() {
         super();
         createResourcesTxt();
@@ -113,6 +114,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private boolean isOverlapping(Task newTask) {
         return prioritizedTasks.stream().anyMatch(existingTask -> doTasksOverlap(existingTask, newTask));
     }
+
     private boolean doTasksOverlap(Task t1, Task t2) {
         LocalDateTime start1 = t1.getStartTime();
         LocalDateTime end1 = t1.getEndTime();
