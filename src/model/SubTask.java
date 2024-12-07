@@ -36,17 +36,13 @@ public class SubTask extends Task {
         this.epic = epic;
     }
 
-    @Override
-    public String toString() {
-        return "SubTask{" +
-                "id=" + getId() +
-                ", name='" + getName() + '\'' +
-                ", status='" + status + '\'' +
-                ", description='" + getDescription() + '\'' +
-                '}';
-    }
 
     public TaskType getType() {
         return this.type;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "," + epic;
     }
 }

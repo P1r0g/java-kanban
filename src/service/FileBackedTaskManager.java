@@ -101,8 +101,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                if (line.equals("id,type,name,status,description,epic")) continue;
+                System.out.println(line);
                 Task.fromString(line, manager);
-
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
