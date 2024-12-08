@@ -2,7 +2,6 @@ package model;
 
 public class SubTask extends Task {
     private Epic epic;
-    private final TaskType type;
 
     public SubTask(String name, Status status, String description, Epic epic, TaskType type) {
         super(name, status, description);
@@ -36,13 +35,12 @@ public class SubTask extends Task {
         this.epic = epic;
     }
 
-
-    public TaskType getType() {
-        return this.type;
-    }
-
     @Override
     public String toString() {
         return super.toString() + "," + epic;
+    }
+
+    public TaskType getType() {
+        return this.type;
     }
 }

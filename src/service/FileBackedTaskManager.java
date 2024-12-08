@@ -14,12 +14,10 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-
     private File file;
     private Path path;
-
-    private final TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator
-            .nullsLast(Comparator.naturalOrder())));
+    private final TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator.
+            nullsLast(Comparator.naturalOrder())));
 
     public FileBackedTaskManager() {
         super();
@@ -101,9 +99,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.equals("id,type,name,status,description,epic")) continue;
-                System.out.println(line);
                 Task.fromString(line, manager);
+
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -134,6 +131,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
         return task;
     }
+
 
     @Override
     public Epic createEpic(Epic epic) {
@@ -196,6 +194,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         super.updateSubTask(updatedSubtask);
         save();
     }
+
 
     @Override
     public void updateEpic(Epic epic) {

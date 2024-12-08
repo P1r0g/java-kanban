@@ -47,7 +47,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void remove(int id) {
         Node node = history.get(id);
         if (node != null) removeNode(node);
-        else System.out.println("Нода не найдена");
     }
 
     private void linkLast(Task task) {
@@ -60,7 +59,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private void removeNode(Node node) {
-        //TODO
         if (node.prev != null) { // если node не первая
             node.prev.next = node.next;
         } else { // если node первая

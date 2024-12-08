@@ -7,13 +7,14 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
-    private final TaskType type;
+    protected TaskType type;
     private int id;
     private String name;
     protected Status status;
     private String description;
     private Duration duration;
     private LocalDateTime startTime;
+
 
     public Task(int id, String name, Status status, String description) {
         setId(id);
@@ -80,11 +81,9 @@ public class Task {
                 break;
         }
     }
-
     public LocalDateTime getEndTime() {
         return startTime.plusMinutes(duration.toMinutes());
     }
-
     public Duration getDuration() {
         return duration;
     }
@@ -156,6 +155,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return id + ", " + type + ", " + name + ", " + status + ", " + description;
+        return id + "," + type + "," + name + "," + status + "," + description;
     }
 }
