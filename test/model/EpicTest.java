@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
 
@@ -17,8 +16,8 @@ class EpicTest {
 
     @Test
     void shouldBeNewWhenAllSubtasksAreNew() {
-        SubTask sub1 = new SubTask("Subtask 1",Status.NEW, "Description", epic);
-        SubTask sub2 = new SubTask("Subtask 2",Status.DONE, "Description", epic);
+        SubTask sub1 = new SubTask(2,"Subtask 1",Status.NEW, "Description", epic);
+        SubTask sub2 = new SubTask(3,"Subtask 2",Status.NEW, "Description", epic);
         epic.addTask(sub1);
         epic.addTask(sub2);
 
@@ -29,9 +28,9 @@ class EpicTest {
 
     @Test
     void shouldBeDoneWhenAllSubtasksAreDone() {
-        SubTask sub1 = new SubTask("Subtask 1",Status.NEW, "Description", epic);
+        SubTask sub1 = new SubTask(2,"Subtask 1",Status.NEW, "Description", epic);
         sub1.setStatus(Status.DONE);
-        SubTask sub2 = new SubTask("Subtask 2",Status.DONE, "Description", epic);
+        SubTask sub2 = new SubTask(3,"Subtask 2",Status.DONE, "Description", epic);
         sub2.setStatus(Status.DONE);
         epic.addTask(sub1);
         epic.addTask(sub2);
@@ -43,9 +42,9 @@ class EpicTest {
 
     @Test
     void shouldBeInProgressWhenSubtasksHaveMixedStatuses() {
-        SubTask sub1 = new SubTask("Subtask 1",Status.NEW, "Description", epic);
+        SubTask sub1 = new SubTask(2,"Subtask 1",Status.NEW, "Description", epic);
         sub1.setStatus(Status.NEW);
-        SubTask sub2 = new SubTask("Subtask 2",Status.DONE, "Description", epic);
+        SubTask sub2 = new SubTask(3,"Subtask 2",Status.DONE, "Description", epic);
         sub2.setStatus(Status.DONE);
         epic.addTask(sub1);
         epic.addTask(sub2);
@@ -57,9 +56,9 @@ class EpicTest {
 
     @Test
     void shouldBeInProgressWhenAllSubtasksAreInProgress() {
-        SubTask sub1 = new SubTask("Subtask 1",Status.NEW, "Description", epic);
+        SubTask sub1 = new SubTask(2,"Subtask 1",Status.NEW, "Description", epic);
         sub1.setStatus(Status.IN_PROGRESS);
-        SubTask sub2 = new SubTask("Subtask 2",Status.DONE, "Description", epic);
+        SubTask sub2 = new SubTask(3,"Subtask 2",Status.DONE, "Description", epic);
         sub2.setStatus(Status.IN_PROGRESS);
         epic.addTask(sub1);
         epic.addTask(sub2);

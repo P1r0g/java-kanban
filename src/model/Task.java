@@ -58,33 +58,45 @@ public class Task {
     }
 
     public static void fromString(String str, FileBackedTaskManager manager) {
+        if (str.equals("id,type,name,status,description,epic,duration,startTime")) return;
         String[] line = str.split(", ");
         if (line.length < 5) {
             throw new IllegalArgumentException("Недостаточно параметров для создания задачи");
         }
-        Status status = Status.valueOf(line[3]);
-        String name = line[2];
-        String description = line[4];
+
         int id = Integer.parseInt(line[0]);
-        switch (line[1]) {
-            case "TASK":
-                manager.createTask(new Task(id, name, status, description));
+        TaskType type = TaskType.valueOf(line[1]);
+        String name = line[2];
+        Status status = Status.valueOf(line[3]);
+        String description = line[4];
+
+        Duration duration = line.length > 6 && !line[5].isEmpty() ? Duration.ofMinutes(Long.parseLong(line[5])) : null;
+        LocalDateTime startTime = line.length > 7 && !line[6].isEmpty() ? LocalDateTime.parse(line[6]) : null;
+
+        switch (type) {
+            case TASK:
+                manager.createTask(new Task(id, name, status, description, duration, startTime));
+                break;
+            case EPIC:
+                manager.createEpic(new Epic(id, name, status, description, duration, startTime));
+                break;
+            case SUBTASK:
+                int epicId = Integer.parseInt(line[7]);
+                manager.createSubTask(new SubTask(id, name, status, description, manager.getEpic(epicId), duration, startTime));
                 break;
             default:
-                break;
-            case "EPIC":
-                manager.createEpic(new Epic(id, name, status, description));
-                break;
-            case "SUBTASK":
-                int epicId = Integer.parseInt(line[5]);
-                manager.createSubTask(new SubTask(id, name, status, description, manager.getEpic(epicId)));
-                break;
+                throw new IllegalArgumentException("Неизвестный тип задачи: " + type);
         }
     }
 
+
     public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
         return startTime.plusMinutes(duration.toMinutes());
     }
+
 
     public Duration getDuration() {
         return duration;
@@ -157,6 +169,9 @@ public class Task {
 
     @Override
     public String toString() {
-        return id + "," + type + "," + name + "," + status + "," + description;
+        return id + ", " + type + ", " + name + ", " + status + ", " + description + ", " +
+                (duration != null ? duration.toMinutes() : "") + ", " +
+                (startTime != null ? startTime.toString() : "");
     }
+
 }

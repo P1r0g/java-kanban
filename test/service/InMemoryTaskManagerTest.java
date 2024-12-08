@@ -1,6 +1,7 @@
 package service;
 
 import model.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -10,7 +11,12 @@ import static model.Status.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
-    TaskManager taskManager = Managers.getDefault();
+    TaskManager taskManager;
+
+    @BeforeEach
+    void setup() {
+        taskManager = Managers.getDefault();
+    }
 
     @Test
     void addNewTask() {
@@ -113,7 +119,7 @@ class InMemoryTaskManagerTest {
         getTasks.add(taskManager.getEpic(epic.getId()));
         List<Task> historyManager = taskManager.getHistoryManager();
 
-        for (int i = 0; i < getTasks.size(); i++){
+        for (int i = 0; i < getTasks.size(); i++) {
             assertEquals(getTasks.get(i), historyManager.get(i), "Не равны");
         }
     }

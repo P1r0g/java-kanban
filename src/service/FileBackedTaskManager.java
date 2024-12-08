@@ -9,15 +9,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.TreeSet;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private File file;
     private Path path;
-    private final TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator
-            .nullsLast(Comparator.naturalOrder())));
 
     public FileBackedTaskManager() {
         super();
@@ -37,7 +32,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void save() {
         if (file == null) createResourcesTxt();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
-            writer.write("id,type,name,status,description,epic");
+            writer.write("id,type,name,status,description,epic,duration,startTime");
             writer.newLine();
             for (Task task : tasks.values()) {
                 writer.write(task.toString());
@@ -99,6 +94,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
+                System.out.println(line);
                 Task.fromString(line, manager);
 
             }
@@ -107,22 +103,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         return manager;
-    }
-
-    private boolean isOverlapping(Task newTask) {
-        return prioritizedTasks.stream().anyMatch(existingTask -> doTasksOverlap(existingTask, newTask));
-    }
-
-    private boolean doTasksOverlap(Task t1, Task t2) {
-        LocalDateTime start1 = t1.getStartTime();
-        LocalDateTime end1 = t1.getEndTime();
-        LocalDateTime start2 = t2.getStartTime();
-        LocalDateTime end2 = t2.getEndTime();
-
-        if (start1 == null || start2 == null || end1 == null || end2 == null) {
-            return false;
-        }
-        return start1.isBefore(end2) && start2.isBefore(end1);
     }
 
     @Override
