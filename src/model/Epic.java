@@ -4,14 +4,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Epic extends Task {
     private final List<SubTask> subTasks = new ArrayList<>();
-
-    public Epic(int id, String name, Status status, String description) {
-        super(id, name, status, description);
-        this.type = TaskType.EPIC;
-    }
 
     public Epic(int id, String name, Status status, String description, Duration duration, LocalDateTime startTime) {
         super(id, name, status, description, duration, startTime);
@@ -20,16 +16,6 @@ public class Epic extends Task {
 
     public Epic(String name, Status status, String description, Duration duration, LocalDateTime startTime) {
         super(name, status, description, duration, startTime);
-        this.type = TaskType.EPIC;
-    }
-
-    public Epic(String name, Status status, String description, TaskType type) {
-        super(name, status, description);
-        this.type = type;
-    }
-
-    public Epic(String name, Status status, String description) {
-        super(name, status, description);
         this.type = TaskType.EPIC;
     }
 
@@ -42,72 +28,73 @@ public class Epic extends Task {
             System.out.println("Нельзя добавить epic в subTaskList");
         } else {
             subTasks.add(subTask);
-            recalculateFields();
+            calculateTime();
         }
     }
 
     public void removeTask(SubTask subTask) {
         subTasks.remove(subTask);
-        recalculateFields();
+        calculateTime();
     }
 
-    private void recalculateFields() {
-        if (subTasks.isEmpty()) {
-            setDuration(Duration.ZERO);
-            setStartTime(null);
-        } else {
-            Duration totalDuration = Duration.ZERO;
-            LocalDateTime earliestStart = null;
-            LocalDateTime latestEnd = null;
 
-            for (SubTask subTask : subTasks) {
-                if (subTask.getStartTime() != null) {
-                    if (earliestStart == null || subTask.getStartTime().isBefore(earliestStart)) {
-                        earliestStart = subTask.getStartTime();
-                    }
-                }
-
-                if (subTask.getEndTime() != null) {
-                    if (latestEnd == null || subTask.getEndTime().isAfter(latestEnd)) {
-                        latestEnd = subTask.getEndTime();
-                    }
-                }
-
-                totalDuration = totalDuration.plus(subTask.getDuration());
-            }
-
-            setDuration(totalDuration);
-            setStartTime(earliestStart);
-        }
-    }
-
-    @Override
-    public LocalDateTime getEndTime() {
-        if (getStartTime() == null || getDuration() == null) {
-            return null;
-        }
-        return getStartTime().plus(getDuration());
-    }
-
-    public void updateStatus(Epic epic) {
+    public void updateStatus() {
         boolean isDone = true;
         boolean isNew = true;
 
         if (subTasks.isEmpty()) {
-            epic.setStatus(Status.NEW);
+            setStatus(Status.NEW);
         } else {
             for (SubTask subTask : subTasks) {
                 if (subTask.getStatus() != Status.NEW) isNew = false;
                 if (subTask.getStatus() != Status.DONE) isDone = false;
             }
-            if (isNew) epic.setStatus(Status.NEW);
-            else if (isDone) epic.setStatus(Status.DONE);
-            else epic.setStatus(Status.IN_PROGRESS);
+            if (isNew) setStatus(Status.NEW);
+            else if (isDone) setStatus(Status.DONE);
+            else setStatus(Status.IN_PROGRESS);
         }
     }
 
     @Override
     public String toString() {
         return super.toString();
+    }
+
+    private void calculateStartTime() {
+        LocalDateTime startSubtask = LocalDateTime.now();
+        if (!subTasks.isEmpty()) {
+            for (SubTask subtask : subTasks) {
+                if (subtask.getStartTime() != null) {
+                    if (subtask.getStartTime().isBefore(startSubtask)) {
+                        startSubtask = subtask.getStartTime();
+                    }
+                }
+            }
+        }
+        setStartTime(startSubtask);
+    }
+
+    private void calculateEndTime() {
+        if (subTasks == null || subTasks.isEmpty()) {
+            this.endTime = null;
+            return;
+        }
+
+        this.endTime = subTasks.stream()
+                .map(SubTask::getEndTime)
+                .filter(Objects::nonNull)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+    }
+
+
+    private void calculateDuration() {
+        setDuration(Duration.between(this.startTime, this.endTime));
+    }
+
+    public void calculateTime() {
+        calculateStartTime();
+        calculateEndTime();
+        calculateDuration();
     }
 }

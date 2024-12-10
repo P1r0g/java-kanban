@@ -8,21 +8,13 @@ import java.util.Objects;
 
 public class Task {
     protected TaskType type;
-    private int id;
-    private String name;
+    protected int id;
+    protected String name;
     protected Status status;
-    private String description;
-    private Duration duration;
-    private LocalDateTime startTime;
-
-
-    public Task(int id, String name, Status status, String description) {
-        setId(id);
-        setName(name);
-        setStatus(status);
-        setDescription(description);
-        this.type = TaskType.TASK;
-    }
+    protected String description;
+    protected Duration duration;
+    protected LocalDateTime startTime;
+    protected LocalDateTime endTime;
 
     public Task(int id, String name, Status status, String description, Duration duration, LocalDateTime startTime) {
         setId(id);
@@ -43,23 +35,9 @@ public class Task {
         this.type = TaskType.TASK;
     }
 
-    public Task(String name, Status status, String description) {
-        setName(name);
-        setStatus(status);
-        setDescription(description);
-        this.type = TaskType.TASK;
-    }
-
-    public Task(String name, Status status, String description, TaskType type) {
-        this.type = type;
-        setName(name);
-        setStatus(status);
-        setDescription(description);
-    }
-
     public static void fromString(String str, FileBackedTaskManager manager) {
         if (str.equals("id,type,name,status,description,epic,duration,startTime")) return;
-        String[] line = str.split(", ");
+        String[] line = str.split(",");
         if (line.length < 5) {
             throw new IllegalArgumentException("Недостаточно параметров для создания задачи");
         }
@@ -70,8 +48,8 @@ public class Task {
         Status status = Status.valueOf(line[3]);
         String description = line[4];
 
-        Duration duration = line.length > 6 && !line[5].isEmpty() ? Duration.ofMinutes(Long.parseLong(line[5])) : null;
-        LocalDateTime startTime = line.length > 7 && !line[6].isEmpty() ? LocalDateTime.parse(line[6]) : null;
+        Duration duration = Duration.ofMinutes(Long.parseLong(line[5]));
+        LocalDateTime startTime = LocalDateTime.parse(line[6]);
 
         switch (type) {
             case TASK:
@@ -82,7 +60,7 @@ public class Task {
                 break;
             case SUBTASK:
                 int epicId = Integer.parseInt(line[7]);
-                manager.createSubTask(new SubTask(id, name, status, description, manager.getEpic(epicId), duration, startTime));
+                manager.createSubTask(new SubTask(id, name, status, description, duration, startTime, manager.getEpic(epicId)));
                 break;
             default:
                 throw new IllegalArgumentException("Неизвестный тип задачи: " + type);
@@ -95,6 +73,10 @@ public class Task {
             return null;
         }
         return startTime.plusMinutes(duration.toMinutes());
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
 
@@ -169,8 +151,8 @@ public class Task {
 
     @Override
     public String toString() {
-        return id + ", " + type + ", " + name + ", " + status + ", " + description + ", " +
-                (duration != null ? duration.toMinutes() : "") + ", " +
+        return id + "," + type + "," + name + "," + status + "," + description + "," +
+                (duration != null ? duration.toMinutes() : "") + "," +
                 (startTime != null ? startTime.toString() : "");
     }
 

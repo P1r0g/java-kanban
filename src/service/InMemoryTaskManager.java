@@ -4,7 +4,6 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -14,8 +13,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected HashMap<Integer, SubTask> subTasks;
     private int id;
     protected final HistoryManager historyManager;
-    private final TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator
-            .nullsLast(Comparator.naturalOrder())));
+    protected TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
     public InMemoryTaskManager() {
         this.tasks = new HashMap<>();
@@ -44,41 +42,18 @@ public class InMemoryTaskManager implements TaskManager {
         return ++id;
     }
 
+    public TreeSet<Task> getPrioritizedTasks() {
+        return prioritizedTasks;
+    }
+
     private void updatePrioritizedTasks(Task task) {
         prioritizedTasks.remove(task);
         if (task.getStartTime() != null) {
             if (isOverlapping(task)) {
-                throw new RuntimeException("Новая задача пересекается с уже существующими задачами.");
+                throw new RuntimeException("Задача уже идет");
             }
             prioritizedTasks.add(task);
         }
-    }
-
-    private void recalculateEpicTiming(Epic epic) {
-        if (epic.getSubTasks().isEmpty()) {
-            epic.setStartTime(null);
-            epic.setDuration(null);
-            return;
-        }
-
-        LocalDateTime earliestStart = null;
-        LocalDateTime latestEnd = null;
-        long totalDuration = 0;
-
-        for (SubTask subTask : epic.getSubTasks()) {
-            if (subTask.getStartTime() != null) {
-                if (earliestStart == null || subTask.getStartTime().isBefore(earliestStart)) {
-                    earliestStart = subTask.getStartTime();
-                }
-                if (latestEnd == null || subTask.getEndTime().isAfter(latestEnd)) {
-                    latestEnd = subTask.getEndTime();
-                }
-                totalDuration += subTask.getDuration().toMinutes();
-            }
-        }
-
-        epic.setStartTime(earliestStart);
-        epic.setDuration(Duration.ofMinutes(totalDuration));
     }
 
     @Override
@@ -157,7 +132,6 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic createEpic(Epic epic) {
         epic.setId(generateID());
         epics.put(epic.getId(), epic);
-        recalculateEpicTiming(epic);
         return epic;
     }
 
@@ -165,7 +139,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateEpic(Epic epic) {
         if (!epics.containsKey(epic.getId())) throw new RuntimeException("Такого эпика нет");
         epics.put(epic.getId(), epic);
-        recalculateEpicTiming(epic);
     }
 
     @Override
@@ -198,7 +171,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         epics.values().forEach(epic -> {
             epic.getSubTasks().clear();
-            epic.updateStatus(epic);
+            epic.updateStatus();
         });
 
         subTasks.clear();
@@ -217,16 +190,13 @@ public class InMemoryTaskManager implements TaskManager {
         subTasks.put(subTask.getId(), subTask);
         Epic epic = epics.get(subTask.getEpic().getId());
         epic.addTask(subTask);
-        recalculateEpicTiming(epic);
         return subTask;
     }
 
     @Override
     public void updateSubTask(SubTask subTask) {
-        updatePrioritizedTasks(subTask);
         subTasks.put(subTask.getId(), subTask);
         Epic epic = subTask.getEpic();
-        recalculateEpicTiming(epic);
     }
 
     @Override
@@ -235,7 +205,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTask == null) throw new RuntimeException("Такой подзадачи нет");
         Epic epic = subTask.getEpic();
         epic.getSubTasks().remove(subTask);
-        recalculateEpicTiming(epic);
         historyManager.remove(id);
         prioritizedTasks.remove(subTask);
     }
