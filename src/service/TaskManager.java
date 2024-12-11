@@ -6,6 +6,7 @@ import model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
     ArrayList<Task> getAllTasks();
@@ -47,4 +48,6 @@ public interface TaskManager {
     void deleteSubTask(int id);
 
     List<Task> getHistoryManager();
+
+    TreeSet<Task> getPrioritizedTasks();
 }

@@ -32,7 +32,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void save() {
         if (file == null) createResourcesTxt();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
-            writer.write("id,type,name,status,description,epic");
+            writer.write("id,type,name,status,description,epic,duration,startTime");
             writer.newLine();
             for (Task task : tasks.values()) {
                 writer.write(task.toString());

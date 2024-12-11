@@ -1,120 +1,120 @@
 package service;
 
 import model.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static model.Status.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryTaskManagerTest {
-    TaskManager taskManager = Managers.getDefault();
+abstract class TaskManagerTest<T extends TaskManager> {
 
-    @Test
-    void addNewTask() {
-        Task task = taskManager.createTask(new Task("Test addNewTask", NEW, "Test addNewTask description"));
+    protected T taskManager;
 
-        final int taskId = task.getId();
+    abstract T createTaskManager();
 
-        final Task savedTask = taskManager.getTask(taskId);
-
-        assertNotNull(savedTask, "Задача не найдена.");
-        assertEquals(task, savedTask, "Задачи не совпадают.");
-
-        final List<Task> tasks = taskManager.getAllTasks();
-
-        assertNotNull(tasks, "Задачи не возвращаются.");
-        assertEquals(1, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.get(0), "Задачи не совпадают.");
+    @BeforeEach
+    void setup() {
+        taskManager = createTaskManager();
     }
 
     @Test
-    void shouldGetTasks() {
-        Task task = taskManager.createTask(new Task("Task1", NEW, "Описание 1"));
-        assertNotNull(taskManager.getAllTasks(), "Ничего нет");
-        assertEquals(task, taskManager.getTask(1), "Они не равны");
+    void shouldCalculateEpicEndTimeCorrectly() {
+        Epic epic = new Epic("Test Epic", NEW, "Description", Duration.ZERO, LocalDateTime.now());
+        taskManager.createEpic(epic);
+
+        LocalDateTime now = LocalDateTime.now();
+        SubTask subTask1 = new SubTask("SubTask 1", NEW, "Description", epic, TaskType.SUBTASK, Duration.ofMinutes(30), now);
+        SubTask subTask2 = new SubTask("SubTask 2", NEW, "Description", epic, TaskType.SUBTASK, Duration.ofMinutes(45), now.plusMinutes(30));
+
+        taskManager.createSubTask(subTask1);
+        taskManager.createSubTask(subTask2);
+
+        assertEquals(now.plusMinutes(75), epic.getEndTime());
+    }
+
+
+    @Test
+    void shouldDetectTaskTimeConflicts() {
+        LocalDateTime now = LocalDateTime.now();
+        taskManager.createTask(new Task("Task 1", NEW, "Description", Duration.ofMinutes(60), now));
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            taskManager.createTask(new Task("Task 2", NEW, "Description", Duration.ofMinutes(30), now.plusMinutes(30)));
+        });
+
+        assertEquals("Задача уже идет", exception.getMessage(), "Incorrect exception message.");
     }
 
     @Test
-    void shouldGetEpicAndSubTask() {
-        Epic epic = taskManager.createEpic(new Epic("задача", NEW, "Описание 1"));
-        SubTask subtask = taskManager.createSubTask(new SubTask("подзадача", NEW, "Описание", epic, TaskType.SUBTASK));
-        assertNotNull(taskManager.getAllEpic(), "Эпики пусты");
-        assertNotNull(taskManager.getAllSubTask(), "подзадачи пусты");
-        assertEquals(epic, taskManager.getEpic(epic.getId()), "Они не равны");
-        assertEquals(subtask, taskManager.getSubTask(subtask.getId()), "Они не равны");
+    void shouldSortTasksByPriority() {
+        LocalDateTime now = LocalDateTime.now();
+        Task task1 = taskManager.createTask(new Task("Task 1", NEW, "Description", Duration.ofMinutes(30), now.plusHours(2)));
+        Task task2 = taskManager.createTask(new Task("Task 2", NEW, "Description", Duration.ofMinutes(30), now.plusHours(1)));
+        Task task3 = taskManager.createTask(new Task("Task 3", NEW, "Description", Duration.ofMinutes(30), now.plusHours(3)));
+
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks().stream().toList();
+
+        assertEquals(task2, prioritizedTasks.get(0), "Task priority is incorrect.");
+        assertEquals(task1, prioritizedTasks.get(1), "Task priority is incorrect.");
+        assertEquals(task3, prioritizedTasks.get(2), "Task priority is incorrect.");
     }
 
     @Test
-    void shouldAddEpicInSubTaskList() {
-        Epic epic = new Epic("Эпик", NEW, "Описание");
+    void shouldHandleEmptyHistoryManager() {
+        List<Task> history = taskManager.getHistoryManager();
 
-        assertEquals(0, epic.getSubTasks().size(), "Epic добавляется");
+        assertNotNull(history, "HistoryManager should not be null.");
+        assertTrue(history.isEmpty(), "HistoryManager should be empty.");
     }
 
     @Test
-    void shouldCreateSubTaskInEpic() {
+    void shouldHandleHistoryWithDuplicates() {
+        Task task = taskManager.createTask(new Task("Task", NEW, "Description", Duration.ZERO, LocalDateTime.now()));
+        taskManager.getTask(task.getId());
+        taskManager.getTask(task.getId());
 
+        List<Task> history = taskManager.getHistoryManager();
+
+        assertEquals(1, history.size(), "HistoryManager should not allow duplicates.");
     }
 
     @Test
-    void shouldCreateTaskManagerAndHistoryManager() {
-        TaskManager taskManager = Managers.getDefault();
-        assertNotNull(taskManager, "TaskManager не создан");
-        assertNotNull(taskManager.getHistoryManager(), "HistoryManager не создан");
+    void shouldRemoveFromHistoryCorrectly() {
+        Task task1 = taskManager.createTask(new Task("Task 1", NEW, "Description", Duration.ofMinutes(30), LocalDateTime.now()));
+        Task task2 = taskManager.createTask(new Task("Task 2", NEW, "Description", Duration.ofMinutes(60), LocalDateTime.now().plusHours(1)));
+        Task task3 = taskManager.createTask(new Task("Task 3", NEW, "Description", Duration.ofMinutes(40), LocalDateTime.now().plusHours(3)));
+
+        taskManager.getTask(task1.getId());
+        taskManager.getTask(task2.getId());
+        taskManager.getTask(task3.getId());
+
+        taskManager.delete(task2.getId());
+
+        List<Task> history = taskManager.getHistoryManager();
+
+        assertEquals(2, history.size(), "HistoryManager should correctly update after task removal.");
+        assertFalse(history.contains(task2), "Removed task should not be in history.");
     }
+}
 
-    @Test
-    void shouldCreateAnyTasks() {
-        Task task = taskManager.createTask(new Task("Task1", NEW, "Описание 1"));
-        Epic epic = taskManager.createEpic(new Epic("Task1", NEW, "Описание 1"));
-        SubTask subTask = taskManager.createSubTask(new SubTask("Task1", NEW, "Описание 1", epic, TaskType.SUBTASK));
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
-        Task task2 = taskManager.getTask(task.getId());
-        Epic epic2 = taskManager.getEpic(epic.getId());
-        SubTask subTask2 = taskManager.getSubTask(subTask.getId());
-
-        assertNotEquals(task.getId(), epic.getId(), "ID не совпадают");
-        assertNotEquals(task.getId(), subTask.getId(), "ID не совпадают");
-        assertNotEquals(epic.getId(), subTask.getId(), "ID не совпадают");
-        assertEquals(task, task2, "Task находится");
-        assertEquals(epic, epic2, "Epic находится");
-        assertEquals(subTask, subTask2, "SubTask находится");
+    @Override
+    InMemoryTaskManager createTaskManager() {
+        return new InMemoryTaskManager();
     }
+}
 
-    @Test
-    void shouldConflictTasksById() {
-        Task task = taskManager.createTask(new Task("Task", NEW, "Description"));
-        Task task2 = taskManager.createTask(new Task(1, "Task", NEW, "Description"));
+class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
-        List<Task> all = taskManager.getAllTasks();
-
-        assertNotEquals(1, all.size(), "Конфликт задач");
-        assertEquals(task2, all.get(1));
-    }
-
-    @Test
-    void shouldImmutabilityTask() {
-        Task task = new Task("Task", NEW, "Description");
-        Task task2 = taskManager.createTask(task);
-
-        assertEquals(task, task2, "Task изменяется");
-    }
-
-    @Test
-    void shouldAddHistoryManager() {
-        Task task = taskManager.createTask(new Task("Task", NEW, "Description"));
-        Epic epic = taskManager.createEpic(new Epic("Epic", NEW, "Description"));
-
-        List<Task> getTasks = new ArrayList<>();
-        getTasks.add(taskManager.getTask(task.getId()));
-        getTasks.add(taskManager.getEpic(epic.getId()));
-        List<Task> historyManager = taskManager.getHistoryManager();
-
-        for (int i = 0; i < getTasks.size(); i++){
-            assertEquals(getTasks.get(i), historyManager.get(i), "Не равны");
-        }
+    @Override
+    FileBackedTaskManager createTaskManager() {
+        return new FileBackedTaskManager(new File("C:\\Users\\pirog\\java-kanban\\test\\testfile.txt"));
     }
 }
