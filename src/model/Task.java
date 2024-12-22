@@ -4,6 +4,7 @@ import service.FileBackedTaskManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -30,7 +31,7 @@ public class Task {
         setName(name);
         setDescription(description);
         setDuration(Duration.ofMinutes(duration));
-        setStartTime(LocalDateTime.parse(startTime));
+        setStartTime(LocalDateTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy")));
         this.type = TaskType.TASK;
     }
 
