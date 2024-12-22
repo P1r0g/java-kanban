@@ -26,6 +26,14 @@ public class Task {
         this.type = TaskType.TASK;
     }
 
+    public Task(String name, String description, long duration, String startTime) {
+        setName(name);
+        setDescription(description);
+        setDuration(Duration.ofMinutes(duration));
+        setStartTime(LocalDateTime.parse(startTime));
+        this.type = TaskType.TASK;
+    }
+
     public Task(String name, Status status, String description, Duration duration, LocalDateTime startTime) {
         setName(name);
         setStatus(status);
