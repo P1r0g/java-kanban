@@ -2,7 +2,7 @@ package handler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import http.Endpoint;
+import http.HttpMethod;
 import service.InMemoryTaskManager;
 import model.Task;
 import http.BaseHttpHandler;
@@ -19,14 +19,14 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod(), "tasks");
+        HttpMethod endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod(), "tasks");
         switch (endpoint) {
             case GET: {
-                handleGetTasks(exchange);
+                handleGet(exchange);
                 break;
             }
             case POST: {
-                handlePostTasks(exchange);
+                handlePost(exchange);
                 break;
             }
             case DELETE: {
@@ -38,12 +38,14 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handleGetTasks(HttpExchange exchange) throws IOException {
+    @Override
+    protected void handleGet(HttpExchange exchange) throws IOException {
         String response = manager.getAllTasks().stream().map(Task::toString).collect(Collectors.joining("\n"));
         writeResponse(exchange, response, 200);
     }
 
-    private void handlePostTasks(HttpExchange exchange) throws IOException {
+    @Override
+    protected void handlePost(HttpExchange exchange) throws IOException {
         Optional<Task> taskBody = parseTask(exchange.getRequestBody(), manager);
         Task taskNew = taskBody.get();
         exchange.sendResponseHeaders(201, 0);

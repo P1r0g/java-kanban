@@ -3,7 +3,7 @@ package handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import http.BaseHttpHandler;
-import http.Endpoint;
+import http.HttpMethod;
 import service.InMemoryTaskManager;
 import model.Task;
 
@@ -18,10 +18,10 @@ public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod(), "prioritized");
+        HttpMethod endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod(), "prioritized");
         switch (endpoint) {
             case GET: {
-                handleGetPrioritizedTasks(exchange);
+                handleGet(exchange);
                 break;
             }
             default:
@@ -29,7 +29,8 @@ public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handleGetPrioritizedTasks(HttpExchange exchange) throws IOException {
+    @Override
+    protected void handleGet(HttpExchange exchange) throws IOException {
         String response = manager.getPrioritizedTasks().stream()
                 .map(Task::toString)
                 .collect(Collectors.joining("\n"));

@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class BaseHttpHandler {
     protected InMemoryTaskManager manager;
@@ -39,20 +40,39 @@ public class BaseHttpHandler {
         exchange.close();
     }
 
-    public Endpoint getEndpoint(String requestPath, String requestMethod, String userPath) {
+    public HttpMethod getEndpoint(String requestPath, String requestMethod, String userPath) {
         String[] pathParts = requestPath.split("/");
 
         if (pathParts.length == 2 && pathParts[1].equals(userPath) && requestMethod.equals("GET")) {
-            return Endpoint.GET;
+            return HttpMethod.GET;
         } else if (pathParts.length == 2 && pathParts[1].equals(userPath) && requestMethod.equals("POST")) {
-            return Endpoint.POST;
+            return HttpMethod.POST;
         } else if (pathParts.length == 3 && pathParts[1].equals(userPath) && requestMethod.equals("DELETE")) {
-            return Endpoint.DELETE;
+            return HttpMethod.DELETE;
         }
-        return Endpoint.UNKNOWN;
+        return HttpMethod.UNKNOWN;
     }
 
-    public void handleDeleteTaskById(HttpExchange exchange, InMemoryTaskManager manager) throws IOException {
+    protected void handleGet(HttpExchange exchange) throws IOException {
+        String response = manager.getAllTasks().stream().map(Task::toString).collect(Collectors.joining("\n"));
+        writeResponse(exchange, response, 200);
+    }
+
+    protected void handlePost(HttpExchange exchange) throws IOException {
+        Optional<Task> taskBody = parseTask(exchange.getRequestBody(), manager);
+        Task taskNew = taskBody.get();
+        exchange.sendResponseHeaders(201, 0);
+        writeResponse(exchange, "Задача добавлена", 201);
+        for (Task task : manager.getAllTasks()) {
+            if (taskNew.getId() == task.getId()) {
+                writeResponse(exchange, "Задача с идентификатором " + task.getId() + "уже существует", 404);
+            }
+        }
+        manager.getAllTasks().add(taskNew);
+        writeResponse(exchange, "Задача добавлена", 201);
+    }
+
+    protected void handleDeleteTaskById(HttpExchange exchange, InMemoryTaskManager manager) throws IOException {
         Optional<Integer> postIdOpt = getTaskId(exchange);
         if (postIdOpt.isEmpty()) {
             writeResponse(exchange, "Некорректный id", 400);

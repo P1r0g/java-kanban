@@ -3,9 +3,9 @@ package handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import http.BaseHttpHandler;
-import http.Endpoint;
-import service.InMemoryTaskManager;
+import http.HttpMethod;
 import model.Task;
+import service.InMemoryTaskManager;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -20,14 +20,14 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod(), "epics");
+        HttpMethod endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod(), "epics");
         switch (endpoint) {
             case GET: {
-                handleGetEpicTasks(exchange);
+                handleGet(exchange);
                 break;
             }
             case POST: {
-                handlePostEpicTasks(exchange);
+                handlePost(exchange);
                 break;
             }
             case DELETE: {
@@ -39,14 +39,16 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handleGetEpicTasks(HttpExchange exchange) throws IOException {
+    @Override
+    protected void handleGet(HttpExchange exchange) throws IOException {
         String response = manager.getAllEpic().stream()
                 .map(Task::toString)
                 .collect(Collectors.joining("\n"));
         writeResponse(exchange, response, 200);
     }
 
-    private void handlePostEpicTasks(HttpExchange exchange) throws IOException {
+    @Override
+    protected void handlePost(HttpExchange exchange) throws IOException {
         Optional<Task> taskBody = parseTask(exchange.getRequestBody(), manager);
         Task taskNew = taskBody.get();
         exchange.sendResponseHeaders(201, 0);
@@ -59,5 +61,4 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
         manager.getAllTasks().add(taskNew);
         writeResponse(exchange, "Задача добавлена", 201);
     }
-
 }

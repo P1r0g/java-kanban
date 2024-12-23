@@ -3,7 +3,7 @@ package handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import http.BaseHttpHandler;
-import http.Endpoint;
+import http.HttpMethod;
 import service.InMemoryTaskManager;
 import model.Task;
 
@@ -19,14 +19,14 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod(), "subtasks");
+        HttpMethod endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod(), "subtasks");
         switch (endpoint) {
             case GET: {
-                handleGetSubTasks(exchange);
+                handleGet(exchange);
                 break;
             }
             case POST: {
-                handlePostSubTasks(exchange);
+                handlePost(exchange);
                 break;
             }
             case DELETE: {
@@ -38,14 +38,16 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handleGetSubTasks(HttpExchange exchange) throws IOException {
+    @Override
+    protected void handleGet(HttpExchange exchange) throws IOException {
         String response = manager.getAllSubTask().stream()
                 .map(Task::toString)
                 .collect(Collectors.joining("\n"));
         writeResponse(exchange, response, 200);
     }
 
-    private void handlePostSubTasks(HttpExchange exchange) throws IOException {
+    @Override
+    protected void handlePost(HttpExchange exchange) throws IOException {
         Optional<Task> taskBody = parseTask(exchange.getRequestBody(), manager);
         Task taskNew = taskBody.get();
         exchange.sendResponseHeaders(201, 0);
@@ -58,5 +60,4 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
         manager.getAllTasks().add(taskNew);
         writeResponse(exchange, "Задача добавлена", 201);
     }
-
 }

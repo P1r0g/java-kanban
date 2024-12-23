@@ -1,6 +1,6 @@
 package http;
 
-public enum Endpoint {
+public enum HttpMethod {
     GET,
     POST,
     DELETE,
