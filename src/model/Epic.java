@@ -19,6 +19,10 @@ public class Epic extends Task {
         this.type = TaskType.EPIC;
     }
 
+    public Epic(String name, String description, long duration, String startTime) {
+        super(name, description, duration, startTime);
+    }
+
     public List<SubTask> getSubTasks() {
         return subTasks;
     }
